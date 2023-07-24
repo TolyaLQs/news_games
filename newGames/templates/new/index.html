@@ -3,20 +3,24 @@
 {% block css %}
     <link rel="stylesheet" href="/static/css/index.css">
 {% endblock %}
-
+{% load humanize %}
 {% block content %}
     <div class="container">
         {% for new in news %}
-            <div class="new-{{new.id}}">
+            <div class="new new-{{new.id}}">
                 <div class="new-title">{{new.title}}</div>
-                <div class="new-pub-add">{{new.pub_add}}</div>
+                <div class="new-pub-add">{{new.pub_add | naturaltime}}</div>
                 {% if new.image %}
                     <div class="new-image">
                         <img src="{{ new.image.url }}" alt="{{new.title}}">
                     </div>
                 {% endif %}
                 {% if new.content %}
-                    <div class="new-text">{{ new.content | truncatechars:150}}</div>
+                    {% if new.len_content %}
+                        <div class="new-text">{{ new.content | truncatechars:150}} <span class="read-next">Читать дальше</span></div>
+                    {% else %}
+                        <div class="new-text">{{ new.content }} </div>
+                    {% endif %}
                 {% endif %}
             </div>
         {% empty %}

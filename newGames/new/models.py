@@ -7,20 +7,24 @@ import datetime
 
 
 def path_image():
-    return f'news/{datetime.datetime.now()}'
+    return f'news/{str(datetime.datetime.now()).split()[0]}'
 
 
 class News(models.Model):
     title = models.CharField(verbose_name='Название', max_length=100)
     content = models.TextField(verbose_name='Текст', blank=True, null=True)
     pub_date = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True)
-    pub_add = models.DateTimeField(verbose_name='Дата публикации', default=datetime.datetime.now(), blank=True, null=True)
+    pub_add = models.DateTimeField(verbose_name='Дата публикации', default=datetime.datetime.now(),
+                                   blank=True, null=True)
     published = models.BooleanField(verbose_name='Статус', default=False)
     pub_updated = models.DateTimeField(verbose_name='Дата изменения', auto_now=True)
     image = models.ImageField(verbose_name='Фото', blank=True, upload_to=path_image())
 
     def __str__(self):
         return self.title
+
+    def len_content(self):
+        return True if len(self.content) >= 150 else False
 
     def save_news(self):
         self.save()
@@ -59,7 +63,7 @@ class News(models.Model):
         return mark_safe('<img src="%s" width="50" height="50" />' % self.get_image())
 
     class Meta:
-        ordering = ['published', 'pub_add']
+        ordering = ['published', '-pub_add']
         verbose_name = 'Новости'
         verbose_name_plural = 'Новости'
 

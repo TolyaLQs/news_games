@@ -7,4 +7,5 @@ from .models import News, NewsLike, NewsPhotosController
 class NewsAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'published', 'pub_date', 'pub_updated')
     list_display_links = ('title',)
+    list_filter = ('published', 'pub_date')
 
