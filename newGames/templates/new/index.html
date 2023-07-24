@@ -1,0 +1,30 @@
+{% extends '../base.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/css/index.css">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% for new in news %}
+            <div class="new-{{new.id}}">
+                <div class="new-title">{{new.title}}</div>
+                <div class="new-pub-add">{{new.pub_add}}</div>
+                {% if new.image %}
+                    <div class="new-image">
+                        <img src="{{ new.image.url }}" alt="{{new.title}}">
+                    </div>
+                {% endif %}
+                {% if new.content %}
+                    <div class="new-text">{{ new.content | truncatechars:150}}</div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <div class="not-news">Новостей нет!</div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

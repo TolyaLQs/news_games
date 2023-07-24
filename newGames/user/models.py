@@ -1,3 +1,4 @@
+from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.core import validators
 from django.db import models
@@ -20,6 +21,32 @@ class SexUser(models.Model):
         return f'{self.sex}'
 
 
+class UserAccountManager(BaseUserManager):
+    def create_user(self, email, password=None):
+        if not email or len(email) <= 0:
+            raise ValueError("Email field is required !")
+        if not password:
+            raise ValueError("Password is must !")
+
+        user = self.model(
+            email=self.normalize_email(email),
+        )
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password):
+        user = self.create_user(
+            email=self.normalize_email(email),
+            password=password
+        )
+        user.is_admin = True
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
+
+
 class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -32,21 +59,22 @@ class User(AbstractUser):
                               error_messages={'unique': 'Пользователь с этой почтой зарегестрирован.'})
     last_name = None
     avatar = models.ImageField(verbose_name='Аватарка',
-                               blank=True, default='users/ava.png', upload_to='users/ava_%Y%m')
+                               blank=True, null=True, default='users/ava.png', upload_to='users/ava_%Y%m')
     moderator = models.BooleanField(verbose_name='Модератор', default=False)
     first_name = None
-    age = models.SmallIntegerField(verbose_name='Возраст', blank=True)
+    age = models.SmallIntegerField(verbose_name='Возраст', blank=True, null=True)
     date_add = models.DateTimeField(verbose_name='Дата регистрации', auto_now_add=True)
-    url_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    url_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(verbose_name='Имя', max_length=40,)
-    sex = models.ForeignKey(SexUser, verbose_name='Пол', on_delete=models.CASCADE)
-    about_user = models.TextField(verbose_name='О себе', max_length=250, blank=True)
-
+    sex = models.ForeignKey(SexUser, verbose_name='Пол', blank=True, null=True, on_delete=models.CASCADE)
+    about_user = models.TextField(verbose_name='О себе', max_length=250, blank=True, null=True)
+    objects = UserAccountManager()
+    
     def __str__(self):
         return f'{self.name}'
 
     class Meta:
-        ordering = ['id', 'name']
+        ordering = ['date_add', 'name']
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 

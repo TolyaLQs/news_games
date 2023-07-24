@@ -22,7 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('profile/', include('user.urls', namespace='user')),
     path('post/', include('post.urls', namespace='post')),
-    path('', include('news.urls', namespace='news')),
+    path('', include('new.urls', namespace='new')),
     path('api/', include('api.urls', namespace='api')),
 
 ]
